@@ -55,14 +55,11 @@ impl Tree {
             }
         }
     }
-
     pub fn build_tree_widget(&self) -> impl Widget<()> {
         let mut widget = Flex::column();
-
         if let Some(root) = &self.root_node {
             widget.add_child(root.build_node_widget());
         }
-
         Align::centered(widget)
     }
 }

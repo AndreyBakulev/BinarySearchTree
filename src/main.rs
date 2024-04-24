@@ -1,11 +1,8 @@
-use druid::widget::{Align, Flex, Label, Padding};
 use druid::{AppLauncher, LocalizedString, Widget, WindowDesc};
 use std::io;
 use crate::tree::Tree;
-
 mod node;
 mod tree;
-
 fn main() {
     let mut tree = Tree::new();
     println!("Welcome To Andrey's Binary Search Tree!");
@@ -21,7 +18,6 @@ fn main() {
     for i in 0..node_values.len() {
         tree.insert(node_values[i].trim().parse::<i64>().unwrap());
     }
-
     let main_window = WindowDesc::new(move || tree.build_tree_widget())
         .title(LocalizedString::new("Binary Search Tree"))
         .window_size((400.0, 400.0));
