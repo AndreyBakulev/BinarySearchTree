@@ -1,15 +1,15 @@
 use crate::node::Node;
+use druid::widget::{Align, Flex, Label, Padding};
+use druid::Widget;
 
 pub(crate) struct Tree {
     root_node: Option<Box<Node>>,
 }
-
 impl Tree {
     pub fn new() -> Self {
-        Tree {
-            root_node: None,
-        }
+        Tree { root_node: None }
     }
+
     pub fn insert(&mut self, value: i64) {
         let new_node = Box::new(Node::new(value, None, None));
         let mut current_node = match self.root_node.as_mut() {
@@ -38,50 +38,31 @@ impl Tree {
         }
     }
 
-    pub fn find(&mut self, value: i64) {
-        let mut current_node = self.root_node.as_mut().unwrap();
-        loop {
-            if value < current_node.value {
-                if let Some(ref mut left_node) = current_node.left {
-                    if left_node.value == value {
-                        println!("Found Node as left node of {}", current_node.value);
-                        break;
-                    }
-                    current_node = left_node;
-                } else {
-                    println!("Node not found in tree!");
-                    break;
-                }
-            } else {
-                if let Some(ref mut right_node) = current_node.right {
-                    if right_node.value == value {
-                        println!("Found Node as right node of {}", current_node.value);
-                        break;
-                    }
-                    current_node = right_node;
-                } else {
-                    println!("Node not found in tree!");
-                    break;
-                }
+    pub fn find(&mut self, value: i64,node: &Option<Box<Node>>) {
+        if value == node.as_ref().unwrap().value{
+            println!("Found {} in tree!",value);
+            return
+        }
+        if value > node.as_ref().unwrap().value {
+            match &node.as_ref().unwrap().right {
+                Some(node) => self.find(value,&node.right),
+                None => println!("{} not found in tree!",value),
+            }
+        } else {
+            match &node.as_ref().unwrap().left {
+                Some(node) => self.find(value,&node.left),
+                None => println!("{} not found in tree!",value),
             }
         }
     }
 
-    pub fn print_tree(&self) {
-        print_tree_rec(Box::new(&self).as_mut().root_node);
-    }
-}
+    pub fn build_tree_widget(&self) -> impl Widget<()> {
+        let mut widget = Flex::column();
 
-fn print_tree_rec(node: Option<Box<Node>>) {
-    match node {
-        Some(node) => {
-            print_tree_rec(node.right);
-            print_tree_rec(node.left)
-        },
-        _ => {
-            println!("{}", node.unwrap().value);
-            return
+        if let Some(root) = &self.root_node {
+            widget.add_child(root.build_node_widget());
         }
-    }
 
+        Align::centered(widget)
+    }
 }
